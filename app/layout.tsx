@@ -1,4 +1,4 @@
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from '@vercel/analytics/react';
 import { Metadata } from "next";
 import { Toaster } from "sonner";
 
