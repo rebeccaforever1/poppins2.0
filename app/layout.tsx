@@ -5,7 +5,25 @@ import { Navbar } from "@/components/custom/navbar";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 
 import "./globals.css";
-
+import { Analytics } from '@vercel/analytics/next';
+ 
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <head>
+        <title>Next.js</title>
+      </head>
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  );
+}
 export const metadata: Metadata = {
   metadataBase: new URL("https://gemini.vercel.ai"),
   title: "Next.js Gemini Chatbot",
