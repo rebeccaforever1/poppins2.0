@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-import { MessageIcon } from "./icons"; // You can replace this with a custom icon
+import { MessageIcon } from "./icons";
 
 export const Overview = () => {
   return (
@@ -15,29 +15,24 @@ export const Overview = () => {
     >
       <div className="border-none bg-muted/50 rounded-2xl p-6 flex flex-col gap-4 text-zinc-500 text-sm dark:text-zinc-400 dark:border-zinc-700">
         <p className="flex flex-row justify-center gap-4 items-center text-zinc-900 dark:text-zinc-50">
-          {/* Replace or add your own icons */}
           <MessageIcon />
-          <span className="font-bold text-lg">Poppins.bot</span>
+          <span>Poppins.Bot</span>
         </p>
         <p>
-          Welcome to Poppins.bot, your personalized parenting assistant. 
-          Designed to offer advice, tips, and resources to help you navigate 
-          the joys and challenges of parenting, all with a human touch.
+          Welcome to <strong>Poppins.Bot</strong>, your personalized parenting
+          assistant. Whether you're navigating tantrums, bedtime routines, or
+          screen time debates, Poppins.Bot is here to help with evidence-based
+          advice and creative solutions tailored to your family's needs.
         </p>
         <p>
-          Powered by state-of-the-art AI technology, Poppins.bot is here to 
-          provide tailored solutions for every stage of parenting, from 
-          managing screen time to planning engaging activities.
-        </p>
-        <p>
-          Learn more about our parent company and explore additional resources 
-          at{" "}
+          {" "}
+          Learn more about how Poppins.Bot works by visiting{" "}
           <Link
-            className="text-blue-500 dark:text-blue-400 underline"
+            className="text-blue-500 dark:text-blue-400"
             href="https://www.lbs.ventures"
             target="_blank"
           >
-            www.lbs.ventures
+            LBS Ventures
           </Link>
           .
         </p>
