@@ -21,14 +21,14 @@ import { Textarea } from "../ui/textarea";
 
 const suggestedActions = [
   {
-    title: "Help me book a flight",
-    label: "from San Francisco to London",
-    action: "Help me book a flight from San Francisco to London",
+    title: "Managing screen time",
+    label: "without conflict",
+    action: "How can I get my kid off screens all of the time?",
   },
   {
-    title: "What is the status",
-    label: "of flight BA142 flying tmrw?",
-    action: "What is the status of flight BA142 flying tmrw?",
+    title: "Eating habits",
+    label: "of picky eaters",
+    action: "How can I get my kid to like healthy food?",
   },
 ];
 
