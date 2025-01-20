@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-import { LogoGoogle, MessageIcon, VercelIcon } from "./icons";
+import { MessageIcon } from "./icons"; // You can replace this with a custom icon
 
 export const Overview = () => {
   return (
@@ -15,31 +15,29 @@ export const Overview = () => {
     >
       <div className="border-none bg-muted/50 rounded-2xl p-6 flex flex-col gap-4 text-zinc-500 text-sm dark:text-zinc-400 dark:border-zinc-700">
         <p className="flex flex-row justify-center gap-4 items-center text-zinc-900 dark:text-zinc-50">
-          <VercelIcon />
-          <span>+</span>
+          {/* Replace or add your own icons */}
           <MessageIcon />
+          <span className="font-bold text-lg">Poppins.bot</span>
         </p>
         <p>
-          This is an open source Chatbot template powered by the Google Gemini
-          model built with Next.js and the AI SDK by Vercel. It uses the{" "}
-          <code className="rounded-sm bg-muted-foreground/15 px-1.5 py-0.5">
-            streamText
-          </code>{" "}
-          function in the server and the{" "}
-          <code className="rounded-sm bg-muted-foreground/15 px-1.5 py-0.5">
-            useChat
-          </code>{" "}
-          hook on the client to create a seamless chat experience.
+          Welcome to Poppins.bot, your personalized parenting assistant. 
+          Designed to offer advice, tips, and resources to help you navigate 
+          the joys and challenges of parenting, all with a human touch.
         </p>
         <p>
-          {" "}
-          You can learn more about the AI SDK by visiting the{" "}
+          Powered by state-of-the-art AI technology, Poppins.bot is here to 
+          provide tailored solutions for every stage of parenting, from 
+          managing screen time to planning engaging activities.
+        </p>
+        <p>
+          Learn more about our parent company and explore additional resources 
+          at{" "}
           <Link
-            className="text-blue-500 dark:text-blue-400"
-            href="https://sdk.vercel.ai/docs"
+            className="text-blue-500 dark:text-blue-400 underline"
+            href="https://www.lbs.ventures"
             target="_blank"
           >
-            Docs
+            www.lbs.ventures
           </Link>
           .
         </p>
