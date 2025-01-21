@@ -1,10 +1,31 @@
+import { convertToCoreMessages, Message, streamText } from "ai";
+import { z } from "zod";
+
+import { geminiProModel } from "@/ai";
+import {
+  generateParentingAdvice,
+  generateDevelopmentMilestones,
+  generateBehaviorManagementStrategies,
+  generateParentingTips,
+} from "@/ai/actions";
 import { auth } from "@/app/(auth)/auth";
-import { getUserSavedDataById, updateUserSavedData } from "@/db/queries";
+// import { tips } from "../../../../components/custom/parenting"; 
+import {
+  createReservation,
+  deleteChatById,
+  getChatById,
+  getReservationById,
+  saveChat,
+} from "@/db/queries";
+import { generateUUID } from "@/lib/utils";
+
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
 
+
+  
   if (!id) {
     return new Response("Not Found!", { status: 404 });
   }
@@ -16,13 +37,13 @@ export async function GET(request: Request) {
   }
 
   try {
-    const savedData = await getUserSavedDataById({ id });
+    const savedData = await getChatById({ id });
 
     if (!savedData) {
       return new Response("Data not found!", { status: 404 });
     }
 
-    if (savedData.userId !== session.user.id) {
+    if (savedData.id !== session.user.id) {
       return new Response("Unauthorized!", { status: 401 });
     }
 
@@ -47,6 +68,8 @@ export async function GET(request: Request) {
   }
 }
 
+
+
 export async function PATCH(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
@@ -61,16 +84,7 @@ export async function PATCH(request: Request) {
     return new Response("Unauthorized!", { status: 401 });
   }
 
-  try {
-    const savedData = await getUserSavedDataById({ id });
 
-    if (!savedData) {
-      return new Response("Data not found!", { status: 404 });
-    }
-
-    if (savedData.userId !== session.user.id) {
-      return new Response("Unauthorized!", { status: 401 });
-    }
 
     const { updates } = await request.json();
 
@@ -84,12 +98,35 @@ export async function PATCH(request: Request) {
       updates.tips = updates.tips.map((tip: string) => ({ tip }));
     }
 
-    const updatedData = await updateUserSavedData({ id, updates });
-    return Response.json(updatedData);
-  } catch (error) {
-    console.error("Error updating data:", error);
-    return new Response("An error occurred while processing your request!", {
-      status: 500,
-    });
   }
-}
+
+  export async function DELETE(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+  
+    if (!id) {
+      return new Response("Not Found", { status: 404 });
+    }
+  
+    const session = await auth();
+  
+    if (!session || !session.user) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+  
+    try {
+      const chat = await getChatById({ id });
+  
+      if (chat.userId !== session.user.id) {
+        return new Response("Unauthorized", { status: 401 });
+      }
+  
+      await deleteChatById({ id });
+  
+      return new Response("Chat deleted", { status: 200 });
+    } catch (error) {
+      return new Response("An error occurred while processing your request", {
+        status: 500,
+      });
+    }
+  }
