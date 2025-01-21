@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
 import { BotIcon, UserIcon } from "./icons";
-import { ActivitySuggestions } from "./parenting/activity-suggestions";
 import { Markdown } from "./markdown";
+import { ActivitySuggestions } from "./parenting/activity-suggestions";
 import { ParentingTips } from "./parenting/tips";
 import { PreviewAttachment } from "./preview-attachment";
 
