@@ -22,6 +22,8 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
+
+
 export async function createUser(email: string, password: string) {
   let salt = genSaltSync(10);
   let hash = hashSync(password, salt);
@@ -98,6 +100,17 @@ export async function getChatById({ id }: { id: string }) {
     throw error;
   }
 }
+
+export async function getUserSavedDataById({ id }: { id: string }) {
+  try {
+    const [savedData] = await db.select().from(chat).where(eq(chat.id, id)); // Adjust table if necessary
+    return savedData;
+  } catch (error) {
+    console.error("Failed to get saved data by ID from the database");
+    throw error;
+  }
+}
+
 
 export async function createReservation({
   id,
