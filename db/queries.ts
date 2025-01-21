@@ -89,7 +89,6 @@ export async function getChatsByUserId({ id }: { id: string }) {
   }
 }
 
-
 export async function getChatById({ id }: { id: string }) {
   try {
     const [selectedChat] = await db.select().from(chat).where(eq(chat.id, id));
@@ -99,7 +98,6 @@ export async function getChatById({ id }: { id: string }) {
     throw error;
   }
 }
-
 
 export async function createReservation({
   id,
