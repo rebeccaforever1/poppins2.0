@@ -1,4 +1,6 @@
 import { convertToCoreMessages, Message, streamText } from "ai";
+
+import { geminiProModel } from "@/ai";
 import { auth } from "@/app/(auth)/auth";
 import { saveChat } from "@/db/queries";
 
@@ -17,10 +19,11 @@ export async function POST(request: Request) {
   );
 
   const result = await streamText({
-    model: "geminiProModel",
+    model: geminiProModel,
     system: `
       - You are a parenting advice assistant.
       - Keep your responses concise and supportive.
+      - Ask follow up questions to nudge user into the optimal flow
       - If generating structured outputs like tips, integrate them into a conversational reply.
       - Do not output raw JSON unless explicitly requested.
     `,

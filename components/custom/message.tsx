@@ -5,10 +5,11 @@ import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
 import { BotIcon, UserIcon } from "./icons";
-import { Markdown } from "./markdown";
-import { PreviewAttachment } from "./preview-attachment";
 import { ParentingTips } from "./parenting/tips";
 import { ActivitySuggestions } from "./parenting/activity-suggestions";
+import { Markdown } from "./markdown";
+import { PreviewAttachment } from "./preview-attachment";
+
 
 export const Message = ({
   chatId,

@@ -20,9 +20,9 @@ export const Overview = () => {
         </p>
         <p>
           Welcome to <strong>Poppins.Bot</strong>, your personalized parenting
-          assistant. Whether you're navigating tantrums, bedtime routines, or
+          assistant. Whether you&apos;re navigating tantrums, bedtime routines, or
           screen time debates, Poppins.Bot is here to help with evidence-based
-          advice and creative solutions tailored to your family's needs.
+          advice and creative solutions tailored to your family&apos;s needs.
         </p>
         <p>
           {" "}
