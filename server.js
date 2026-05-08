@@ -2,7 +2,6 @@ require('dotenv').config({ path: '.env.local' });
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const rateLimit = require('express-rate-limit');
 
 const app = express();
 
@@ -10,57 +9,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// --- Rate Limiters ---
-const chatLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 20,
-    standardHeaders: true,
-    legacyHeaders: false,
-    handler: (req, res) => {
-        console.log(`[RATE LIMIT] ${new Date().toISOString()} | IP: ${req.ip} | endpoint: /api/chat`);
-        res.status(429).json({ 
-            error: "I hope some of this has been helpful. We all are doing our best 🌸 Take a short break and try again in a few minutes." 
-        });
-    }
-});
-
-const ttsLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10,
-    standardHeaders: true,
-    legacyHeaders: false,
-    handler: (req, res) => {
-        console.log(`[RATE LIMIT] ${new Date().toISOString()} | IP: ${req.ip} | endpoint: /api/tts`);
-        res.status(429).json({ 
-            error: "Voice responses need a little rest! 🎙️ Try again in a few minutes." 
-        });
-    }
-});
-
-app.use('/api/chat', chatLimiter);
-app.use('/api/tts', ttsLimiter);
-
-// --- Redirect www to non-www ---
-app.use((req, res, next) => {
-    if (req.headers.host && req.headers.host.startsWith('www.')) {
-        return res.redirect(301, 'https://poppins.best' + req.url);
-    }
-    next();
-});
-
-// --- Redirect http to https ---
-app.use((req, res, next) => {
-    if (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect(301, 'https://' + req.headers.host + req.url);
-    }
-    next();
-});
-
 // --- Perplexity Chat Endpoint ---
 app.post('/api/chat', async (req, res) => {
     const { messages } = req.body;
-
-    console.log(`[CHAT] ${new Date().toISOString()} | IP: ${req.ip} | messages: ${messages?.length}`);
     
     const systemMessage = {
         role: "system",
@@ -115,8 +66,6 @@ app.post('/api/chat', async (req, res) => {
 // --- Hume TTS Endpoint ---
 app.post('/api/tts', async (req, res) => {
     const { text } = req.body;
-
-    console.log(`[TTS] ${new Date().toISOString()} | IP: ${req.ip} | chars: ${text?.length}`);
     
     if (!text || text.trim().length === 0) {
         return res.status(400).json({ error: 'No text provided' });
@@ -128,12 +77,12 @@ app.post('/api/tts', async (req, res) => {
     cleanText = cleanText.replace(/\*/g, '');
     cleanText = cleanText.replace(/#/g, '');
     cleanText = cleanText.substring(0, 500);
-
     // Add breathing room after sentences
     cleanText = cleanText.replace(/\. /g, '...  ');
     cleanText = cleanText.replace(/\? /g, '?  ');
     cleanText = cleanText.replace(/! /g, '!  ');
     
+    // Correct format using utterances array
     const requestBody = {
         utterances: [
             {
@@ -167,6 +116,8 @@ app.post('/api/tts', async (req, res) => {
         }
         
         const humeData = await response.json();
+
+        // Extract the base64 audio from Hume's response structure
         const base64Audio = humeData.generations?.[0]?.audio;
 
         if (!base64Audio) {
@@ -183,7 +134,7 @@ app.post('/api/tts', async (req, res) => {
     }
 });
 
-// --- Status Endpoint ---
+// Status endpoint
 app.get('/api/status', (req, res) => {
     res.json({
         chat: true,
@@ -194,9 +145,8 @@ app.get('/api/status', (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+app.listen(3001, () => {
+    console.log('Server running on http://localhost:3001');
     console.log('Hume API Key:', process.env.HUME_API_KEY ? '✓ Configured' : '✗ Missing');
     console.log('Hume Voice ID:', process.env.HUME_VOICE_ID || 'Using default: ITO');
 });
