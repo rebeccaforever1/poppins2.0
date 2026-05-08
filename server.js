@@ -28,8 +28,12 @@ app.post('/api/chat', async (req, res) => {
         - Short sentences. Real talk. No fluff.
         - Never end with a generic motivational line like "you've got this" or "your support makes all the difference."
         - Use hyphens (-) for bullet points only when listing 3+ items.
+        - break into specific steps or tips using hyphens.
         - Never use markdown like ** or ###.
-        - Maximum 3-4 sentences per response unless listing steps.`
+        - Maximum 3-4 sentences per response unless listing steps.
+        FORMATTING RULES:
+        - Never write more than 2 sentences in a row without a line break.`
+
     };
     
     const allMessages = [systemMessage];
