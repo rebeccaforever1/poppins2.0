@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>poppins.bot - AI Parenting Companion</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #faf9f7 0%, #f0ebe5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-size: 15px;
+            line-height: 1.5;
+            color: #2c2418;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(160, 140, 120, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #2c2418, #6b5a4a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header p {
+            color: #8b735a;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+        .breadcrumb-item {
+            color: #8b735a;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb-item:hover {
+            color: #2c2418;
+        }
+
+        .breadcrumb-item.active {
+            color: #2c2418;
+            font-weight: 600;
+        }
+
+        .breadcrumb-sep {
+            color: #d4c5b5;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c2418;
+            margin-bottom: 15px;
+        }
+
+        .button-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .age-btn, .category-btn, .detail-btn {
+            background: white;
+            border: 1px solid rgba(160, 140, 120, 0.3);
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #3d3224;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .age-btn:hover, .category-btn:hover, .detail-btn:hover {
+            background: #2c2418;
+            border-color: #2c2418;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 600px) {
+            .age-btn, .category-btn, .detail-btn {
+                white-space: normal;
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .chat-section {
+            margin-top: 30px;
+            border-top: 1px solid rgba(160, 140, 120, 0.25);
+            padding-top: 20px;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .chat-header h3 {
+            font-size: 1.1rem;
+            color: #2c2418;
+        }
+
+        .messages {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 15px;
+            height: 350px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 16px;
+            border-radius: 20px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            font-size: 0.9rem;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: #2c2418;
+            color: white;
+            border-bottom-right-radius: 4px;
+            font-weight: 400;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: white;
+            color: #2c2418;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .bot-message p {
+            margin: 0 0 8px 0;
+        }
+        .bot-message p:last-child {
+            margin-bottom: 0;
+        }
+        .bot-message ul, .bot-message ol {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .typing {
+            align-self: flex-start;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 18px;
+        }
+
+        .typing span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #a6907a;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        .input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e0d6cc;
+            border-radius: 30px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+
+        .input-area input:focus {
+            border-color: #a6907a;
+        }
+
+        .input-area button {
+            background: #2c2418;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .voice-control {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .voice-btn {
+            background: linear-gradient(135deg, #6b5a4a, #2c2418);
+            border: none;
+            border-radius: 40px;
+            padding: 10px 20px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .voice-btn:hover:not(:disabled) {
+            transform: scale(1.02);
+        }
+
+        .voice-btn.active {
+            background: linear-gradient(135deg, #4a9a6e, #2c6a4a);
+            animation: pulse 1.5s infinite;
+        }
+
+        .voice-btn.recording {
+            background: linear-gradient(135deg, #c45a4a, #8a2a1a);
+        }
+
+        .voice-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header" onclick="location.reload()">
+        <h1>✨ poppins.bot</h1>
+        <p>your gentle parenting companion</p>
+    </div>
+
+    <div class="breadcrumb" id="breadcrumb">
+        <span class="breadcrumb-item active" onclick="resetToHome()">home</span>
+    </div>
+
+    <div id="ageView">
+        <div class="section-title">choose your child's stage</div>
+        <div class="button-grid" id="ageButtons"></div>
+    </div>
+
+    <div id="categoryView" class="hidden">
+        <div class="section-title" id="categoryTitle"></div>
+        <div class="button-grid" id="categoryButtons"></div>
+    </div>
+
+    <div id="detailView" class="hidden">
+        <div class="section-title" id="detailTitle"></div>
+        <div class="button-grid" id="detailButtons"></div>
+    </div>
+
+    <div class="chat-section">
+        <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span>💭</span>
+                <h3>chat with poppins</h3>
+            </div>
+        </div>
+        <div class="messages" id="messages">
+            <div class="message bot-message">🌸 What would you like to talk about? Choose an age group above to get started.</div>
+        </div>
+        <div class="input-wrapper" id="inputWrapper" style="display: none;">
+            <div class="input-area">
+                <input type="text" id="chatInput" placeholder="type your answer here..." autocomplete="off">
+                <button id="sendBtn">send</button>
+            </div>
+            <div class="voice-control">
+                <button id="voiceSpeakBtn" class="voice-btn" disabled>
+                    🎤 Speak Question
+                </button>
+                <button id="voiceModeBtn" class="voice-btn" disabled>
+                    🔊 Voice Responses OFF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3001/api/chat';
+    let conversationHistory = [];
+    let isLoading = false;
+    let currentAge = null;
+    let currentCategory = null;
+    
+    // Voice state
+    let recognition = null;
+    let voiceResponsesEnabled = false;
+    let currentUtterance = null;
+    let audioCtx = null;
+    let currentSource = null;
+
+    const ageGroups = ["newborn", "infant", "toddler", "preschooler", "school-age", "tween/pre-teen", "early teen", "later teen"];
+
+    const categoriesMap = {
+        newborn: ["developmental milestones", "feeding & nutrition", "health & safety", "parental adjustment & support", "sleep & routine", "socioemotional development"],
+        infant: ["developmental milestones", "feeding & nutrition", "health & safety", "parental adjustment & support", "sleep & routine", "socioemotional development"],
+        toddler: ["cognitive development & learning", "developmental milestones", "discipline & behavior management", "feeding & nutrition", "sleep & routine", "socioemotional development"],
+        preschooler: ["discipline & behavior management", "education & learning", "feeding & nutrition", "health & safety", "independence & autonomy", "sleep & routine", "socioemotional development"],
+        "school-age": ["education & learning", "health & safety", "nutrition & fitness", "peer relationships & social dynamics", "sleep & routine", "technology & screen time"],
+        "tween/pre-teen": ["academics & pressure", "emotional well-being", "nutrition & fitness", "peer relationships & social status", "puberty & physical changes", "technology & internet safety"],
+        "early teen": ["academics & school transition", "family dynamics & communication", "independence & responsibility", "mental health & well-being", "nutrition & fitness", "peer relationships & social dynamics", "puberty & body image"],
+        "later teen": ["academic & career planning", "mental health & stress management", "nutrition & fitness", "peer relationships & romantic partnerships", "substance use & risky behaviors", "transition to adulthood"]
+    };
+
+    const detailsMap = {
+        "developmental milestones": ["speech development", "motor skills", "tummy time", "typical milestones", "developmental delays"],
+        "feeding & nutrition": ["feeding frequency", "milk/formula intake", "nursing challenges", "solid foods", "picky eating"],
+        "health & safety": ["baby-proofing", "car seat safety", "illness concerns", "sleep safety", "vaccines"],
+        "sleep & routine": ["bedtime routines", "night awakenings", "nap transitions", "safe sleep", "sleep training"],
+        "socioemotional development": ["bonding & attachment", "emotional development", "separation anxiety", "empathy", "social skills"],
+    };
+
+    function getDetails(age, category) {
+        if (detailsMap[category]) return detailsMap[category];
+        return ["understanding this better", "practical tips", "common concerns", "expert guidance"];
+    }
+
+    const ageView = document.getElementById('ageView');
+    const categoryView = document.getElementById('categoryView');
+    const detailView = document.getElementById('detailView');
+    const ageButtonsDiv = document.getElementById('ageButtons');
+    const categoryButtonsDiv = document.getElementById('categoryButtons');
+    const detailButtonsDiv = document.getElementById('detailButtons');
+    const categoryTitle = document.getElementById('categoryTitle');
+    const detailTitle = document.getElementById('detailTitle');
+    const breadcrumbDiv = document.getElementById('breadcrumb');
+    const messagesDiv = document.getElementById('messages');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const inputWrapper = document.getElementById('inputWrapper');
+    const voiceSpeakBtn = document.getElementById('voiceSpeakBtn');
+    const voiceModeBtn = document.getElementById('voiceModeBtn');
+
+    function updateBreadcrumb(items) {
+        breadcrumbDiv.innerHTML = '';
+        items.forEach((item, idx) => {
+            const span = document.createElement('span');
+            span.className = 'breadcrumb-item';
+            if (idx === items.length - 1) span.classList.add('active');
+            span.innerText = item;
+            if (idx < items.length - 1) {
+                span.onclick = () => {
+                    if (item === 'home') resetToHome();
+                    else if (item === currentAge && currentCategory) showCategories(currentAge);
+                    else if (item === currentAge && !currentCategory) resetToHome();
+                };
+            }
+            breadcrumbDiv.appendChild(span);
+            if (idx < items.length - 1) {
+                const sep = document.createElement('span');
+                sep.className = 'breadcrumb-sep';
+                sep.innerText = ' / ';
+                breadcrumbDiv.appendChild(sep);
+            }
+        });
+    }
+
+    function resetToHome() {
+        currentAge = null;
+        currentCategory = null;
+        ageView.classList.remove('hidden');
+        categoryView.classList.add('hidden');
+        detailView.classList.add('hidden');
+        updateBreadcrumb(['home']);
+    }
+
+    function showCategories(age) {
+        currentAge = age;
+        currentCategory = null;
+        ageView.classList.add('hidden');
+        categoryView.classList.remove('hidden');
+        detailView.classList.add('hidden');
+        categoryTitle.innerText = `${age} · what would you like to explore?`;
+        
+        const cats = categoriesMap[age] || [];
+        categoryButtonsDiv.innerHTML = '';
+        cats.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'category-btn';
+            btn.innerText = cat;
+            btn.onclick = () => showDetails(age, cat);
+            categoryButtonsDiv.appendChild(btn);
+        });
+        updateBreadcrumb(['home', age]);
+    }
+
+     async function speakText(text) {
+        if (!voiceResponsesEnabled) return;
+        
+        let cleanText = text.replace(/<br>/g, ' ');
+        cleanText = cleanText.replace(/<[^>]*>/g, '');
+        cleanText = cleanText.replace(/\*/g, '');
+        cleanText = cleanText.replace(/#/g, '');
+        cleanText = cleanText.replace(/•/g, '');
+        if (cleanText.length > 500) cleanText = cleanText.substring(0, 500);
+        
+        try {
+            const response = await fetch('http://localhost:3001/api/tts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: cleanText })
+            });
+            
+            const data = await response.json();
+            
+            if (data.audio) {
+                const binary = atob(data.audio);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                const audioBuffer = await audioCtx.decodeAudioData(bytes.buffer);
+                
+                if (currentSource) {
+                    try { currentSource.stop(); } catch(e) {}
+                }
+                const source = audioCtx.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioCtx.destination);
+                source.start(0);
+                currentSource = source;
+            }
+        } catch (err) {
+            console.error('TTS fetch error:', err);
+        }
+    }
+
+    function startSpeechRecognition() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            addMessage("🎤 Speech recognition is not supported in your browser. Try Chrome or Edge.", false);
+            return;
+        }
+        
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        
+        recognition.onstart = () => {
+            voiceSpeakBtn.classList.add('recording');
+            voiceSpeakBtn.innerHTML = '🎙️ Listening...';
+        };
+        
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if (transcript.trim()) {
+                chatInput.value = transcript;
+                sendMessage();
+            }
+        };
+        
+        recognition.onerror = (event) => {
+            console.error("Speech recognition error:", event.error);
+            voiceSpeakBtn.classList.remove('recording');
+            voiceSpeakBtn.innerHTML = '🎤 Speak Question';
+            if (event.error !== 'no-speech') {
+                addMessage("🎤 Sorry, I didn't catch that. Please try again.", false);
+            }
+        };
+        
+        recognition.onend = () => {
+            voiceSpeakBtn.classList.remove('recording');
+            voiceSpeakBtn.innerHTML = '🎤 Speak Question';
+        };
+        
+        recognition.start();
+    }
+
+    function toggleVoiceResponses() {
+        if (!voiceResponsesEnabled) {
+            // Create AudioContext here — this is the trusted user gesture
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            voiceResponsesEnabled = true;
+            voiceModeBtn.innerHTML = '🔊 Voice Responses ON';
+            voiceModeBtn.classList.add('active');
+            addMessage("🔊 Voice responses enabled. Poppins will speak her answers aloud.", false);
+        } else {
+            voiceResponsesEnabled = false;
+            audioCtx = null;
+            voiceModeBtn.innerHTML = '🔇 Voice Responses OFF';
+            voiceModeBtn.classList.remove('active');
+            addMessage("🔇 Voice responses disabled. You'll see responses on screen only.", false);
+        }
+    }
+
+    function enableVoiceButtons() {
+        voiceSpeakBtn.disabled = false;
+        voiceModeBtn.disabled = false;
+    }
+
+    function showDetails(age, category) {
+        currentCategory = category;
+        ageView.classList.add('hidden');
+        categoryView.classList.add('hidden');
+        detailView.classList.remove('hidden');
+        detailTitle.innerText = `${category} · select a topic`;
+        
+        const details = getDetails(age, category);
+        detailButtonsDiv.innerHTML = '';
+        details.forEach(detail => {
+            const btn = document.createElement('button');
+            btn.className = 'detail-btn';
+            btn.innerText = detail;
+            btn.onclick = () => {
+                const userDisplay = `${age} → ${category} → ${detail}`;
+                addMessage(userDisplay, true);
+                
+                const internalPrompt = `For a ${age} child, tell me about ${category} - specifically ${detail}. Give a warm, practical answer in 2-3 short sentences.`;
+                conversationHistory.push({ role: "user", content: internalPrompt });
+                
+                isLoading = true;
+                showTyping();
+                
+                fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: conversationHistory })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    removeTyping();
+                    const botReply = data.reply || "I'm here for you. Could you rephrase that?";
+                    addMessage(botReply, false);
+                    
+                    // SHOW AND ENABLE INPUT AREA AND VOICE BUTTONS
+                    inputWrapper.style.display = 'flex';
+                    chatInput.disabled = false;
+                    sendBtn.disabled = false;
+                    enableVoiceButtons();
+                    chatInput.focus();
+                    
+                    conversationHistory.push({ role: "assistant", content: botReply });
+                    isLoading = false;
+                })
+                .catch(err => {
+                    removeTyping();
+                    addMessage("✨ I'm having trouble connecting. Please try again.", false);
+                    isLoading = false;
+                });
+            };
+            detailButtonsDiv.appendChild(btn);
+        });
+        updateBreadcrumb(['home', age, category]);
+    }
+
+    function addMessage(text, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+        
+        if (isUser) {
+            messageDiv.innerHTML = text.replace(/\n/g, '<br>');
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        } else {
+            if (voiceResponsesEnabled) {
+                // Show thinking placeholder
+                messageDiv.innerHTML = '<em style="color:#a6907a;">🎙️ thinking...</em>';
+                messagesDiv.appendChild(messageDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                
+                // Fetch audio, then reveal text and play together
+                speakText(text).then(() => {
+                    messageDiv.innerHTML = text.replace(/\n/g, '<br>');
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                });
+            } else {
+                messageDiv.innerHTML = text.replace(/\n/g, '<br>');
+                messagesDiv.appendChild(messageDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        }
+    }
+
+    function showTyping() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.innerHTML = '<span></span><span></span><span></span>';
+        messagesDiv.appendChild(typingDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function removeTyping() {
+        const el = document.getElementById('typingIndicator');
+        if (el) el.remove();
+    }
+
+    async function sendMessage() {
+        const userText = chatInput.value.trim();
+        if (!userText || isLoading) return;
+        chatInput.value = '';
+        
+        addMessage(userText, true);
+        conversationHistory.push({ role: "user", content: userText });
+        
+        isLoading = true;
+        showTyping();
+        
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: conversationHistory })
+            });
+            const data = await response.json();
+            removeTyping();
+            
+            const botReply = data.reply || "I'm here for you. Could you rephrase that?";
+            addMessage(botReply, false);
+            conversationHistory.push({ role: "assistant", content: botReply });
+        } catch (err) {
+            removeTyping();
+            addMessage("✨ I'm having trouble connecting. Please try again.", false);
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    // Initialize age buttons
+    ageGroups.forEach(age => {
+        const btn = document.createElement('button');
+        btn.className = 'age-btn';
+        btn.innerText = age;
+        btn.onclick = () => showCategories(age);
+        ageButtonsDiv.appendChild(btn);
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+    
+    voiceSpeakBtn.addEventListener('click', startSpeechRecognition);
+    voiceModeBtn.addEventListener('click', toggleVoiceResponses);
+</script>
+</body>
+</html>
