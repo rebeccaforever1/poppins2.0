@@ -353,7 +353,7 @@
 </div>
 
 <script>
-    const API_URL = 'http://localhost:3001/api/chat';
+    const API_URL = '/api/chat';
     let conversationHistory = [];
     let isLoading = false;
     let currentAge = null;
@@ -472,7 +472,7 @@
         if (cleanText.length > 500) cleanText = cleanText.substring(0, 500);
         
         try {
-            const response = await fetch('http://localhost:3001/api/tts', {
+            const response = await fetch('/api/tts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: cleanText })
