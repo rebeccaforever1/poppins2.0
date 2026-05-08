@@ -597,7 +597,7 @@
                 .then(res => res.json())
                 .then(data => {
                     removeTyping();
-                    const botReply = data.reply || "I'm here for you. Could you rephrase that?";
+                    const botReply = data.reply || data.error || "I'm here for you. Could you rephrase that?";
                     addMessage(botReply, false);
                     
                     // SHOW AND ENABLE INPUT AREA AND VOICE BUTTONS
@@ -683,7 +683,7 @@
             const data = await response.json();
             removeTyping();
             
-            const botReply = data.reply || "I'm here for you. Could you rephrase that?";
+            const botReply = data.reply || data.error || "I'm here for you. Could you rephrase that?";
             addMessage(botReply, false);
             conversationHistory.push({ role: "assistant", content: botReply });
         } catch (err) {
