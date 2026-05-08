@@ -583,8 +583,7 @@
                 const userDisplay = `${age} → ${category} → ${detail}`;
                 addMessage(userDisplay, true);
                 
-                const internalPrompt = `For a ${age} child, tell me about ${category} - specifically ${detail}. Give a warm, practical answer in 2-3 short sentences.`;
-                conversationHistory.push({ role: "user", content: internalPrompt });
+                const internalPrompt = `For a ${age} child, tell me about ${category} - specifically ${detail}.`;
                 
                 isLoading = true;
                 showTyping();
